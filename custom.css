@@ -219,6 +219,34 @@ html, body {
   color: #e2e8f0;
 }
 
+/* --- Uma Tab Copy/Swap Row --------------------------------- */
+.umaTabCopyRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 6px;
+  background: #16161f;
+  border-bottom: 1px solid #2d2d3f;
+}
+
+.umaTabCopyBtn {
+  background: linear-gradient(#2a2a3e, #1e1e2e);
+  border: 1px solid #3a3a50;
+  color: #e2e8f0;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.8em;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.umaTabCopyBtn:hover {
+  background: linear-gradient(#22c55e, #15803d);
+  border-color: #4ade80;
+  color: #fff;
+}
+
 /* --- Horse Definition Header ------------------------------- */
 .horseDefHeader {
   background: linear-gradient(#1e4d35, #153825);
@@ -394,6 +422,51 @@ html, body {
   color: #94a3b8;
 }
 
+/* --- Skill Disable Toggle ---------------------------------- */
+.skillDisableToggle {
+  position: absolute;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: 1px solid #3a3a50;
+  border-radius: 3px;
+  color: #94a3b8;
+  font-size: 0.7em;
+  padding: 1px 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+  z-index: 1;
+}
+
+li:hover .skillDisableToggle,
+li.horseSkillDisabled .skillDisableToggle {
+  opacity: 1;
+}
+
+.skillDisableToggle:hover {
+  color: #4ade80;
+  border-color: #4ade80;
+}
+
+/* --- Disabled Skill Styling -------------------------------- */
+.horseSkillDisabled .skill,
+.horseSkillDisabled .expandedSkillHeader {
+  opacity: 0.35;
+  filter: grayscale(0.8);
+}
+
+.horseSkillDisabled .skillDisableToggle {
+  color: #f97316;
+  border-color: #f97316;
+}
+
+.horseSkillDisabled .skillDisableToggle:hover {
+  color: #4ade80;
+  border-color: #4ade80;
+}
+
 .skillDetails {
   color: #e2e8f0;
 }
@@ -540,6 +613,23 @@ html, body {
 
 #basinnChartRefresh {
   color: #f97316;
+}
+
+/* --- Basinn Chart Uma Selector ----------------------------- */
+#basinnChartUmaSelect {
+  border: 1px solid #3a3a50;
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-bottom: 6px;
+  color: #e2e8f0;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+#basinnChartUmaSelect legend {
+  color: #94a3b8;
+  font-size: 0.78em;
 }
 
 .basinnChartPopover {

@@ -470,6 +470,15 @@ export const HorseDef = memo(function HorseDef(props) {
 		return newStrat;
 	}), [props.state.strategy]);
 
+	const [disabledSkills, setDisabledSkills] = useLens(props.state.disabledSkills);
+
+	function toggleSkillDisabled(id, e) {
+		e.stopPropagation();
+		const next = new Set(disabledSkills);
+		if (next.has(id)) next.delete(id); else next.add(id);
+		setDisabledSkills(next);
+	}
+
 	function openSkillPicker(e) {
 		e.stopPropagation();
 		setSkillPickerOpen(true);
@@ -608,20 +617,23 @@ export const HorseDef = memo(function HorseDef(props) {
 	const courseDistance = props.course ? props.course.distance : 0;
 	const skillList = useMemo(function () {
 		const u = uniqueSkillForUma(umaId, starCount);
-		return Array.from(skills.values()).sort(skillOrder).map(id =>
-			expanded.has(id)
-				? <li key={id} class="horseExpandedSkill">
+		return Array.from(skills.values()).sort(skillOrder).map(id => {
+			const isDisabled = disabledSkills.has(id);
+			return expanded.has(id)
+				? <li key={id} class={`horseExpandedSkill${isDisabled ? ' horseSkillDisabled' : ''}`}>
 					  <ExpandedSkillDetails id={id} distanceFactor={courseDistance} lv={id == u && l_uniqueLv} dismissable={id != u}
 						  samplePolicy={props.showPolicyEd ? props.state.samplePolicies.get(id) : null}
 						  topChildren={props.hintLevels && <SkillCost id={id} hints={props.hintLevels} ownedSkills={new Map() /* ignore the fact that we own them or the cost would always be 0 */} />} />
 					  {props.skillExtra && cloneElement(props.skillExtra, {id})}
+					  <button class="skillDisableToggle" title={isDisabled ? 'Enable skill' : 'Disable skill'} onClick={e => toggleSkillDisabled(id, e)}>{isDisabled ? '▶' : '⏸'}</button>
 				  </li>
-				: <li key={id} style="">
+				: <li key={id} class={isDisabled ? 'horseSkillDisabled' : ''}>
 					  <Skill id={id} selected={false} lv={id == u && l_uniqueLv} dismissable={id != u} />
 					  {props.skillExtra && cloneElement(props.skillExtra, {id})}
+					  <button class="skillDisableToggle" title={isDisabled ? 'Enable skill' : 'Disable skill'} onClick={e => toggleSkillDisabled(id, e)}>{isDisabled ? '▶' : '⏸'}</button>
 				  </li>
-		);
-	}, [skills, umaId, expanded, courseDistance, props.hintLevels, props.showPolicyEd, props.skillExtra]);
+		});
+	}, [skills, umaId, expanded, disabledSkills, courseDistance, props.hintLevels, props.showPolicyEd, props.skillExtra]);
 
 	let score = -1;
 	if (props.showScore) {
@@ -668,7 +680,7 @@ export const HorseDef = memo(function HorseDef(props) {
 						{props.showOcr !== false &&
 							<Localizer><button class="circleBtn btnType2" title={<Text id="ocrtip" />} onClick={setOcrOpen.bind(null, true)}>📷&#xFE0E;</button></Localizer>}
 					</div>
-					<div class={`horseSkillPickerOverlay ${ocrOpen || saveMngrOpen ? "open" : ""}`} onClick={() => {setOcrOpen(false); setSaveMngrOpen(false);}} />
+					<div class={`horseSkillPickerOverlay ${ocrOpen || saveMngrOpen ? "open" : ""}`} onMouseDown={() => {setOcrOpen(false); setSaveMngrOpen(false);}} />
 					{ocrOpen &&
 						<div class="horseSkillPickerWrapper open">
 							<HorseOcr isOpen={ocrOpen} onAccept={handleOcrAccept} onClose={setOcrOpen.bind(null, false)} />
@@ -702,7 +714,7 @@ export const HorseDef = memo(function HorseDef(props) {
 						</li>
 					</ul>
 				</div>
-				<div class={`horseSkillPickerOverlay ${skillPickerOpen ? "open" : ""}`} onClick={setSkillPickerOpen.bind(null, false)} />
+				<div class={`horseSkillPickerOverlay ${skillPickerOpen ? "open" : ""}`} onMouseDown={setSkillPickerOpen.bind(null, false)} />
 				<div class={`horseSkillPickerWrapper ${skillPickerOpen ? "open" : ""}`}>
 					<SkillList ids={selectableSkills} selected={skills} setSelected={setSkillsAndClose} isOpen={skillPickerOpen} />
 				</div>

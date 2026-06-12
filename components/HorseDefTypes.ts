@@ -64,6 +64,7 @@ export interface HorseState {
 	aptitudes: Aptitude[10]
 	skills: Map<(typeof skillmeta)['groupId'], keyof typeof skills>
 	samplePolicies: Map<keyof typeof skills, SamplePolicyDesc>
+	disabledSkills: Set<string>
 	uniqueLv: number
 	mood: -2 | -1 | 0 | 1 | 2;
 	popularity: number
@@ -85,6 +86,7 @@ export const DEFAULT_HORSE_STATE = {
 	aptitudes: ['S','S','S','S','A','A','A','A','A','A'],
 	skills: SkillSet([]),
 	samplePolicies: new Map(),
+	disabledSkills: new Set(),
 	uniqueLv: 1,
 	mood: 2,
 	popularity: 1
@@ -97,11 +99,20 @@ export function serializeUma(uma) {
 	} else {
 		delete obj.samplePolicies;
 	}
+	if (uma.disabledSkills && uma.disabledSkills.size > 0) {
+		obj.disabledSkills = Array.from(uma.disabledSkills);
+	} else {
+		delete obj.disabledSkills;
+	}
 	return obj;
 }
 
-const NEW_HORSE_FIELDS = Object.freeze({mood: 2 /* v5 */, popularity: 1 /* v5 */, starCount: 3 /* v8 */, uniqueLv: 1 /* v8 */});
+const NEW_HORSE_FIELDS = Object.freeze({mood: 2 /* v5 */, popularity: 1 /* v5 */, starCount: 3 /* v8 */, uniqueLv: 1 /* v8 */, disabledSkills: new Set() /* v9 */});
 
 export function deserializeUma(umaObj) {
-	return Object.assign({}, NEW_HORSE_FIELDS, umaObj, {skills: SkillSet(umaObj.skills), samplePolicies: /* v6 */ new Map(Object.entries(umaObj.samplePolicies || {}))});
+	return Object.assign({}, NEW_HORSE_FIELDS, umaObj, {
+		skills: SkillSet(umaObj.skills),
+		samplePolicies: /* v6 */ new Map(Object.entries(umaObj.samplePolicies || {})),
+		disabledSkills: /* v9 */ new Set(umaObj.disabledSkills || []),
+	});
 }

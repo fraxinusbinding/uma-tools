@@ -154,10 +154,23 @@ function horseEquals(h1, h2) {
 			return s1.size == s2.size && Array.from(s1.keys()).reduce((b,k) => b && s1.get(k) == s2.get(k), true);
 		} else if (k == 'samplePolicies') {
 			return Array.from(h1.skills.values()).every(id => shallowEquals(h1.samplePolicies.get(id), h2.samplePolicies.get(id))) && Array.from(h2.skills.values()).every(id => shallowEquals(h1.samplePolicies.get(id), h2.samplePolicies.get(id)));
+		} else if (k == 'disabledSkills') {
+			const d1 = h1.disabledSkills || new Set(), d2 = h2.disabledSkills || new Set();
+			return d1.size == d2.size && Array.from(d1).every(id => d2.has(id));
 		} else {
 			return Object.is(h1[k], h2[k]);
 		}
 	}, true);
+}
+
+function withEnabledSkills(uma) {
+	if (!uma.disabledSkills || uma.disabledSkills.size == 0) return uma;
+	const skills = new Map(uma.skills);
+	uma.disabledSkills.forEach(id => {
+		const groupId = skillmeta[id] && skillmeta[id].groupId;
+		if (groupId && skills.get(groupId) == id) skills.delete(groupId);
+	});
+	return {...uma, skills};
 }
 
 const enum EventType { CM, LOH }
@@ -687,6 +700,7 @@ function Umalator(props) {
 		return m;
 	}, [chartSkills]);
 	const [chartSkillPickerOpen, setChartSkillPickerOpen] = useState(false);
+	const [chartUmaIdx, setChartUmaIdx] = useState(0);
 	const [popoverSkill, setPopoverSkill] = useState('');
 
 	// update when state is loaded from url
@@ -696,6 +710,7 @@ function Umalator(props) {
 
 	const [lastChartRun, setLastChartRun] = useState({
 		uma: uma1,
+		umaIdx: 0,
 		courseId,
 		racedef,
 		skills: [],
@@ -793,21 +808,21 @@ function Umalator(props) {
 
 	const leftUma = uma1, rightUma = mode == Mode.StaCalc ? debufUma : uma2;
 	const setLeftUma = setUma1, setRightUma = mode == Mode.StaCalc ? setDebufUma : setUma2;
-	function copyUmaToRight() {
+	const copyUmaToRight = useCallback(() => {
 		postEvent('copyUma', {direction: 'to-right'});
 		setRightUma(leftUma);
-	}
+	}, [leftUma, setRightUma]);
 
-	function copyUmaToLeft() {
+	const copyUmaToLeft = useCallback(() => {
 		postEvent('copyUma', {direction: 'to-left'});
 		setLeftUma(rightUma);
-	}
+	}, [rightUma, setLeftUma]);
 
-	function swapUmas() {
+	const swapUmas = useCallback(() => {
 		postEvent('copyUma', {direction: 'swap'});
 		setLeftUma(rightUma);
 		setRightUma(leftUma);
-	}
+	}, [leftUma, rightUma, setLeftUma, setRightUma]);
 
 	const strings = {skillnames: {}, tracknames: TRACKNAMES_en, common: COMMON_STRINGS[props.lang], ui: UI_STRINGS[props.lang]};
 	const langid = CC_GLOBAL ? 0 : +(props.lang == 'en');
@@ -821,8 +836,8 @@ function Umalator(props) {
 				nsamples,
 				course,
 				racedef: racedefToParams(racedef),
-				uma1: uma1,
-				uma2: uma2,
+				uma1: withEnabledSkills(uma1),
+				uma2: withEnabledSkills(uma2),
 				options: {seed, usePosKeep, useCompeteTop, useIntChecks}
 			}
 		});
@@ -836,8 +851,8 @@ function Umalator(props) {
 				nsamples,
 				course,
 				racedef: racedefToParams(racedef),
-				uma: uma1,
-				debufUma,
+				uma: withEnabledSkills(uma1),
+				debufUma: withEnabledSkills(debufUma),
 				options: {seed, usePosKeep, useCompeteTop, useIntChecks, forceFullSpurt}
 			}
 		});
@@ -855,19 +870,20 @@ function Umalator(props) {
 
 	function doBasinnChart() {
 		postEvent('doBasinnChart', {});
-		const params = racedefToParams(racedef, uma1.strategy);
+		const chartUma = withEnabledSkills(chartUmaIdx == 1 ? uma2 : uma1);
+		const params = racedefToParams(racedef, chartUma.strategy);
 		const skills = getActivateableSkills(chartMode != 'all' ? chartSkillsForMode(chartMode) : baseSkillsToTest.filter(id => {
-			const existing = uma1.skills.get(skillmeta[id].groupId);
+			const existing = chartUma.skills.get(skillmeta[id].groupId);
 			const group = skillGroups.get(skillmeta[id].groupId);
-			const skillSet = Array.from(uma1.skills.values());
+			const skillSet = Array.from(chartUma.skills.values());
 			return !(
 				existing == id || group.indexOf(id) < group.indexOf(existing)
 				|| id[0] == '9' && skillSet.includes('1' + id.slice(1))  // reject inherited uniques if we already have the regular version
 				|| id[0] == '9' && id.length > 6 && skillSet.includes(id.slice(2))  // evolved inherited uniques
 			);
-		}), uma1, course, params);
-		setLastChartRun({uma: uma1, courseId, racedef, skills, fresh: false});
-		runBasinnChart(uma1, params, skills);
+		}), chartUma, course, params);
+		setLastChartRun({uma: chartUma, umaIdx: chartUmaIdx, courseId, racedef, skills, fresh: false});
+		runBasinnChart(chartUma, params, skills);
 	}
 
 	function basinnChartSelection(skillId) {
@@ -877,7 +893,8 @@ function Umalator(props) {
 
 	function addSkillFromTable(skillId) {
 		postEvent('addSkillFromTable', {skillId});
-		setUma1(new (O.skills.get(skillmeta[skillId].groupId))(skillId));
+		const setChartUma = chartUmaIdx == 1 ? setUma2 : setUma1;
+		setChartUma(new (O.skills.get(skillmeta[skillId].groupId))(skillId));
 	}
 
 	function showPopover(skillId) {
@@ -934,9 +951,14 @@ function Umalator(props) {
 	const umaTabs = useMemo(() => (
 		<div class="umaTabs">
 			<div class={`umaTab ${currentIdx == 0 ? 'selected' : ''}`} onClick={() => setCurrentIdx(0)}><span><Text id={mode == Mode.Compare ? "ui.uma1" : "ui.uma"} /></span></div>
+			{mode != Mode.Chart && <div class="umaTabCopyRow">
+				<button class="umaTabCopyBtn" title="Copy Uma 1 → Uma 2" onClick={e => { e.stopPropagation(); copyUmaToRight(); }}>1→2</button>
+				<button class="umaTabCopyBtn" title="Swap Uma 1 ↔ Uma 2" onClick={e => { e.stopPropagation(); swapUmas(); }}>⮂</button>
+				<button class="umaTabCopyBtn" title="Copy Uma 2 → Uma 1" onClick={e => { e.stopPropagation(); copyUmaToLeft(); }}>2→1</button>
+			</div>}
 			{mode != Mode.Chart && <div class={`umaTab ${currentIdx == 1 ? 'selected' : ''}`} onClick={() => setCurrentIdx(1)}><span><Text id={mode == Mode.Compare ? "ui.uma2" : "ui.debuffer"} /></span><div id="expandBtn" title="Expand panel" onClick={toggleExpand} /></div>}
 		</div>
-	), [currentIdx, mode]);
+	), [currentIdx, mode, copyUmaToRight, swapUmas, copyUmaToLeft]);
 
 	let resultsPane;
 	if (mode == Mode.Compare && results.length > 0) {
@@ -988,7 +1010,8 @@ function Umalator(props) {
 			</div>
 		);
 	} else if (mode == Mode.Chart) {
-		const dirty = !horseEquals(uma1, lastChartRun.uma) || courseId != lastChartRun.courseId || !shallowEquals(racedef, lastChartRun.racedef) || (chartMode == 'selected' ? chartSkills.some(id => lastChartRun.skills.indexOf(id) == -1) : lastChartRun.fresh);
+		const chartUma = withEnabledSkills(chartUmaIdx == 1 ? uma2 : uma1);
+		const dirty = chartUmaIdx != lastChartRun.umaIdx || !horseEquals(chartUma, lastChartRun.uma) || courseId != lastChartRun.courseId || !shallowEquals(racedef, lastChartRun.racedef) || (chartMode == 'selected' ? chartSkills.some(id => lastChartRun.skills.indexOf(id) == -1) : lastChartRun.fresh);
 		resultsPane = (
 			<div id="resultsPaneWrapper">
 				<div id="resultsPane" class="mode-chart">
@@ -1110,6 +1133,16 @@ function Umalator(props) {
 						{
 							mode == Mode.Chart &&
 								<div id="extendedOptionsRow">
+									<fieldset id="basinnChartUmaSelect">
+										<div>
+											<input type="radio" id="basinnChartUma1" name="basinnChartUma" value="0" checked={chartUmaIdx == 0} onClick={() => setChartUmaIdx(0)} />
+											<label for="basinnChartUma1"><Text id="ui.uma1" /></label>
+										</div>
+										<div>
+											<input type="radio" id="basinnChartUma2" name="basinnChartUma" value="1" checked={chartUmaIdx == 1} onClick={() => setChartUmaIdx(1)} />
+											<label for="basinnChartUma2"><Text id="ui.uma2" /></label>
+										</div>
+									</fieldset>
 									<fieldset id="basinnChartSelect">
 										<div>
 											<input type="radio" id="basinnChartSelectAll" name="basinnChartSelection" value="all" checked={chartMode == 'all'} onClick={switchChartMode} />
@@ -1128,7 +1161,7 @@ function Umalator(props) {
 										<button class="stdBtn btnType2" style={chartMode == 'selected' ? '' : 'visibility:hidden'} onClick={clearChartSkills}><Text id="ui.basinnchartselection.clear" /></button>
 										<button class="stdBtn btnType1" style={chartMode == 'selected' ? '' : 'visibility:hidden'} onClick={setChartSkillPickerOpen.bind(null, true)}><Text id="ui.basinnchartselection.addskill" /></button>
 									</div>
-									<div class={`horseSkillPickerOverlay ${chartSkillPickerOpen ? "open" : ""}`} onClick={setChartSkillPickerOpen.bind(null, false)} />
+									<div class={`horseSkillPickerOverlay ${chartSkillPickerOpen ? "open" : ""}`} onMouseDown={setChartSkillPickerOpen.bind(null, false)} />
 									<div class={`horseSkillPickerWrapper ${chartSkillPickerOpen ? "open" : ""}`}>
 										<SkillList ids={nonPurpleSkills} selectionMode="all" selected={chartSkillsMap} setSelected={setChartSkillsAndClose} isOpen={chartSkillPickerOpen} />
 									</div>
