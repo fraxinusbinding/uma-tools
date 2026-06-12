@@ -1,0 +1,617 @@
+/* ============================================================
+   Fuji Kiseki Dark Theme
+   bg-deep:   #0f0f13
+   bg-surface: #1e1e2e
+   bg-raised:  #2a2a3e
+   accent:     #4ade80
+   text:       #e2e8f0
+   text-muted: #94a3b8
+   ============================================================ */
+
+/* --- Scrollbar --------------------------------------------- */
+* {
+  scrollbar-color: #3a3a50 #1e1e2e;
+}
+
+/* --- Base --------------------------------------------------- */
+html, body {
+  background: #0f0f13;
+  color: #e2e8f0;
+}
+
+/* --- Panels & Containers ------------------------------------ */
+#nonUmaPanes {
+  background: #1e1e2e;
+  border-color: #4ade80;
+}
+
+#resultsPaneWrapper {
+  background: #16161f;
+}
+
+#umaOverlay {
+  background: #1e1e2e;
+  border-color: #2d2d3f;
+}
+
+.horseDef {
+  background: #1e1e2e;
+  border-color: #4ade80;
+}
+
+.horseSkillListWrapper {
+  background: #16161f;
+}
+
+.horseParams {
+  background: #16161f;
+  border-color: #4ade80;
+}
+
+.horseSkillPickerWrapper {
+  background: #1e1e2e;
+}
+
+.skillListButtonsRow {
+  background: #1e1e2e;
+}
+
+/* --- Mode Bar ---------------------------------------------- */
+#modeBar {
+  box-shadow: 0 3px 0 #000;
+}
+
+.modeBtn {
+  background: linear-gradient(#2a2a3e, #1e1e2e) padding-box,
+              linear-gradient(#3a3a50, #2a2a40) border-box;
+  color: #e2e8f0;
+}
+
+.modeBtn.modeBtnActive {
+  background: linear-gradient(#22c55e, #15803d) padding-box,
+              linear-gradient(#4ade80, #16a34a) border-box;
+  border-right: 2px solid transparent;
+  color: #fff;
+}
+
+.modeBtnActive + .modeBtn {
+  border-left: none;
+}
+
+/* --- Buttons ----------------------------------------------- */
+.stdBtn {
+  background: linear-gradient(#22c55e, #15803d) padding-box,
+              linear-gradient(#4ade80, #16a34a) border-box;
+  box-shadow: 0 5px 0 #000;
+  outline-color: #15803d;
+  color: #fff;
+}
+
+.stdBtn:not([disabled]):active {
+  box-shadow: none;
+}
+
+.btnType1 {
+  background: linear-gradient(#22c55e, #15803d) padding-box,
+              linear-gradient(#4ade80, #16a34a) border-box;
+  outline-color: #15803d;
+  color: #fff;
+}
+
+.btnType2 {
+  background: linear-gradient(#2a2a3e, #1e1e2e) padding-box,
+              linear-gradient(#3a3a50, #2a2a40) border-box;
+  color: #e2e8f0;
+  outline-color: #3a3a50;
+}
+
+.pillBtn, .circleBtn {
+  box-shadow: 1px 3px 0 #000, -1px 3px 0 #000;
+}
+
+.pillBtn:active, .circleBtn:active {
+  box-shadow: none;
+}
+
+.splitBtn:active {
+  box-shadow: 1px 3px 0 #000, -1px 3px 0 #000;
+}
+
+.splitBtn.btnType1 > div {
+  background: linear-gradient(#22c55e, #15803d) padding-box,
+              linear-gradient(#4ade80, #16a34a) border-box;
+  color: #fff;
+}
+
+.splitBtn.btnType2 > div {
+  background: linear-gradient(#2a2a3e, #1e1e2e) padding-box,
+              linear-gradient(#3a3a50, #2a2a40) border-box;
+  color: #e2e8f0;
+}
+
+.splitBtn > div > ul {
+  background: #1e1e2e;
+  border-color: #3a3a50;
+  color: #e2e8f0;
+}
+
+.splitBtn > div > ul button:hover {
+  background: #22c55e;
+  color: #fff;
+}
+
+.splitBtn > div > ul > li:empty {
+  border-bottom-color: #3a3a50;
+}
+
+/* --- Toggle (on/off) --------------------------------------- */
+.onoff {
+  background: linear-gradient(#252535 0 2px, #2d2d40 2px, #3a3a50) padding-box,
+              linear-gradient(#2d2d40, #3a3a55) border-box;
+}
+
+.onoff:checked {
+  background: linear-gradient(#15803d 0 2px, #16a34a 2px, #22c55e) padding-box,
+              linear-gradient(#16a34a, #4ade80) border-box;
+}
+
+.onoff::before {
+  color: #94a3b8;
+  text-shadow: none;
+}
+
+.onoff:checked::before {
+  color: #fff;
+  text-shadow: -1px -1px 0 #15803d, 1px -1px 0 #15803d,
+               -1px 1px 0 #15803d, 1px 1px 0 #15803d;
+}
+
+.onoff::after {
+  background: linear-gradient(135deg, #3a3a50 0 50%, #2a2a3e 50%, #3a3a50) padding-box,
+              linear-gradient(#3a3a55, #2a2a40) border-box;
+}
+
+/* --- Uma Tabs ---------------------------------------------- */
+.umaTab {
+  background: linear-gradient(#2a2a3e, #1e1e2e);
+  color: #e2e8f0;
+  outline-color: #3a3a50;
+}
+
+.umaTab.selected {
+  background: linear-gradient(#22c55e, #15803d);
+  color: #fff;
+  outline-color: #4ade80;
+}
+
+/* --- Expand / Copy buttons --------------------------------- */
+#expandBtn {
+  background: linear-gradient(#22c55e, #15803d);
+  border-color: #4ade80;
+}
+
+.selected > #expandBtn {
+  background: linear-gradient(#2a2a3e, #1e1e2e);
+  border-color: #3a3a50;
+}
+
+.selected > #expandBtn::after {
+  border-right-color: #e2e8f0;
+  border-top-color: #e2e8f0;
+}
+
+#closeUmaOverlay {
+  color: #94a3b8;
+}
+
+#copyUmaButtons > div {
+  background: linear-gradient(#2a2a3e, #1e1e2e);
+  border-color: #3a3a50;
+  color: #e2e8f0;
+}
+
+#copyUmaButtons > div::after {
+  border-top-color: #e2e8f0;
+  border-right-color: #e2e8f0;
+}
+
+#swapUmas {
+  color: #e2e8f0;
+}
+
+/* --- Horse Definition Header ------------------------------- */
+.horseDefHeader {
+  background: linear-gradient(#1e4d35, #153825);
+  border-bottom-color: #4ade80;
+}
+
+.horseSkillHeader {
+  background: linear-gradient(#1e4d35, #153825) padding-box,
+              linear-gradient(#4ade80, #22c55e) border-box;
+  box-shadow: 0 3px 0 #000;
+}
+
+/* --- Horse Params ------------------------------------------ */
+.horseParamHeader {
+  background: #4ade80;
+  color: #0f0f13;
+  border-left-color: #22c55e;
+}
+
+.horseParamHeader > img {
+  filter: drop-shadow(0 2px 0 #15803d);
+}
+
+.horseParamHeader > span {
+  text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+}
+
+.horseParam {
+  border-left-color: #2a2a3e;
+}
+
+.horseParam > input,
+.horseAptitudes > div:last-child > input {
+  color: #e2e8f0;
+}
+
+/* --- Horse Aptitudes --------------------------------------- */
+.horseAptitudes > div,
+.horseFullAptitudes > div {
+  background: #1e1e2e;
+  border-color: #3a3a50;
+  color: #e2e8f0;
+}
+
+.horseAptitudeSelect > ul {
+  background: #1e1e2e;
+  border-color: #3a3a50;
+}
+
+.horseAptitudeSelect li:hover {
+  background: #22c55e;
+}
+
+.horseAptitudeSelect > span::after {
+  border-bottom-color: #e2e8f0;
+  border-right-color: #e2e8f0;
+}
+
+.horseStrategySelect {
+  color: #e2e8f0;
+}
+
+/* --- Uma Name / Score -------------------------------------- */
+.umaEpithet > span {
+  color: #e2e8f0;
+}
+
+.umaSelectInput {
+  color: #e2e8f0;
+}
+
+.umaScore {
+  background: #1e1e2e;
+  border-color: #3a3a50;
+  color: #e2e8f0;
+}
+
+.umaSuggestions {
+  border-color: #3a3a50;
+}
+
+.umaSuggestion {
+  background: #1e1e2e;
+  color: #e2e8f0;
+}
+
+.umaSuggestion:nth-child(even) {
+  background: #252535;
+}
+
+.umaSuggestion.selected,
+.umaSuggestion:hover {
+  background: #22c55e;
+  color: #fff;
+}
+
+/* --- Filter Buttons ---------------------------------------- */
+.filterButton {
+  background: #2a2a3e;
+  color: #e2e8f0;
+  box-shadow: 0 3px 0 #000;
+  -webkit-text-stroke: 0;
+  text-stroke: 0;
+}
+
+.filterButton.active {
+  background: #22c55e;
+  color: #fff;
+  box-shadow: 0 3px 0 #15803d;
+  -webkit-text-stroke: 0;
+  text-stroke: 0;
+}
+
+/* --- Filter Search Input ----------------------------------- */
+.filterSearch {
+  background: #2a2a3e;
+  border: 1px solid #3a3a50;
+  border-radius: 4px;
+  color: #e2e8f0;
+}
+
+.filterSearch::placeholder {
+  color: #64748b;
+}
+
+/* --- Add Skill Button -------------------------------------- */
+.addSkillButton {
+  background: #1e1e2e;
+  border-color: #3a3a50;
+  color: #e2e8f0;
+}
+
+/* --- Skill Cards ------------------------------------------- */
+.skill {
+  box-shadow: 0 3px 0 #000;
+}
+
+.skill:active {
+  box-shadow: none;
+}
+
+.skill-white {
+  background: linear-gradient(90deg, #252535, #2d2d44) padding-box,
+              linear-gradient(90deg, #3a3a55, #4a4a65) border-box;
+}
+
+.skill-gold {
+  background: linear-gradient(90deg, #2a2515, #3a3010) padding-box,
+              linear-gradient(90deg, #7a6020, #b89010) border-box;
+}
+
+.skill-pink {
+  background: linear-gradient(90deg, #2a1525, #3a1535) padding-box,
+              linear-gradient(90deg, #8a2060, #c02870) border-box;
+}
+
+.skill-unique {
+  background: linear-gradient(90deg, #1a2a1a, #1a2035, #1a1a3a, #2a1535) padding-box,
+              linear-gradient(90deg, #4ade80, #60a5fa, #a78bfa, #f472b6) border-box;
+}
+
+/* Skill card text */
+.skillName,
+.skillLv > label,
+.skillLv > input {
+  color: #e2e8f0;
+  text-shadow: none;
+  -webkit-text-stroke: 0;
+  text-stroke: 0;
+}
+
+.skillDismiss {
+  color: #94a3b8;
+}
+
+.skillDetails {
+  color: #e2e8f0;
+}
+
+.skillActivationEditor > select,
+.skillActivationParams > input[type="number"] {
+  color: #e2e8f0;
+}
+
+/* Skill detail section borders */
+.skill-white .skillDetails,
+.skill-white .skillDetailsSection {
+  border-image: linear-gradient(#3a3a55, #4a4a65) 90;
+}
+
+.skill-gold .skillDetails,
+.skill-gold .skillDetailsSection {
+  border-image: linear-gradient(#7a6020, #b89010) 90;
+}
+
+.skill-pink .skillDetails,
+.skill-pink .skillDetailsSection {
+  border-image: linear-gradient(#8a2060, #c02870) 90;
+}
+
+.skill-unique .skillDetails,
+.skill-unique .skillDetailsSection {
+  border-image: linear-gradient(#4ade80, #f472b6) 90;
+}
+
+/* --- Hint Buttons ------------------------------------------ */
+.hintbtn.hintDown {
+  background: linear-gradient(#2a2a3e, #1e1e2e);
+  outline-color: #3a3a50;
+}
+
+.hintbtn.hintDown::before,
+.hintbtn.hintDown::after {
+  border-top-color: #3a3a50;
+}
+
+.hintDown .hintbtnDummyBackground {
+  background: linear-gradient(-36deg, #2a2a3e, #1e1e2e 30%);
+}
+
+.hintDown .hintbtnText {
+  color: #e2e8f0;
+}
+
+.hintLevel {
+  color: #fb923c;
+}
+
+/* --- Selects & Inputs -------------------------------------- */
+.presetSelect > legend {
+  background: #2a2a3e;
+  color: #e2e8f0;
+}
+
+.presetSelect > legend::after {
+  border-color: #2a2a3e transparent transparent transparent;
+}
+
+.presetSelect > select,
+.trackSelect > select {
+  background: #1e1e2e;
+  border-color: #3a3a50;
+  color: #e2e8f0;
+}
+
+.groundSelect {
+  color: #e2e8f0;
+}
+
+/* --- Results Summary --------------------------------------- */
+#resultsHelp {
+  color: #94a3b8;
+}
+
+#resultsSummary > tfoot th {
+  color: #94a3b8;
+}
+
+#resultsSummary > tbody td {
+  background: #1e1e2e;
+  border-color: #3a3a50;
+  color: #e2e8f0;
+}
+
+/* --- Info Tables ------------------------------------------- */
+#infoTables > table {
+  background: #1e1e2e;
+}
+
+#infoTables > table th {
+  color: #e2e8f0;
+}
+
+#infoTables caption {
+  background: #1e1e2e;
+}
+
+#infoTables tbody {
+  border-bottom-color: #3a3a50;
+}
+
+/* --- Basinn Chart ------------------------------------------ */
+.basinnChartWrapper {
+  background: #1e1e2e;
+  border-color: #3a3a50;
+}
+
+.basinnChartWrapper.dirty {
+  border-color: #f97316;
+}
+
+.basinnChart {
+  color: #e2e8f0;
+}
+
+.basinnChart th {
+  background: linear-gradient(#2a2a3e, #1e1e2e);
+  color: #e2e8f0;
+}
+
+.basinnChart .columnHeader {
+  border-bottom-color: #3a3a50;
+}
+
+.basinnChartSortedAsc span::after,
+.basinnChartSortedDesc span::after {
+  border-bottom-color: #e2e8f0;
+  border-right-color: #e2e8f0;
+}
+
+.basinnChart tr.selected {
+  background: #166534;
+  color: #e2e8f0;
+}
+
+.chartSkillDismiss {
+  color: #64748b;
+}
+
+#basinnChartRefresh {
+  color: #f97316;
+}
+
+.basinnChartPopover {
+  background: #1e1e2e;
+  border-color: #3a3a50;
+}
+
+/* --- Saved Horse Table ------------------------------------- */
+.savedHorseTableWrapper {
+  background: #1e1e2e;
+  border-color: #3a3a50;
+}
+
+.savedHorseTable {
+  color: #e2e8f0;
+}
+
+.savedHorseTable th {
+  background: linear-gradient(#2a2a3e, #1e1e2e);
+  color: #e2e8f0;
+}
+
+.savedHorseTable .columnHeader {
+  border-bottom-color: #3a3a50;
+}
+
+.savedHorseTableSortedAsc span::after,
+.savedHorseTableSortedDesc span::after {
+  border-bottom-color: #e2e8f0;
+  border-right-color: #e2e8f0;
+}
+
+.savedHorseTable > tbody > tr.selected {
+  background: #166534;
+  color: #e2e8f0;
+}
+
+/* --- Stamina Calculator ------------------------------------ */
+.stacalcPane {
+  color: #e2e8f0;
+}
+
+.reqStamCalc > input {
+  color: #e2e8f0;
+}
+
+/* --- Skill Visualizer -------------------------------------- */
+#addSkill {
+  background: #1e1e2e;
+  border-color: #3a3a50;
+  color: #e2e8f0;
+}
+
+#skillListWrapper {
+  background: #1e1e2e;
+  color: #e2e8f0;
+}
+
+/* --- Sorter ------------------------------------------------ */
+#groupHead {
+  color: #e2e8f0;
+}
+
+.umatab > span {
+  color: #e2e8f0;
+}
+
+#orderIcons span {
+  color: #e2e8f0;
+}
+
+#sortlistIcons img {
+  background: #1e1e2e;
+  border-color: #1e1e2e;
+}
