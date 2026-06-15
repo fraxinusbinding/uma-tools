@@ -65,8 +65,10 @@ const UI_ja = Object.freeze({
 		'all': '全スキル',
 		'inherit': '継承固有スキル',
 		'selected': '選択したスキル',
+		'build': '編成スキル',
 		'addskill': '+ スキル追加',
-		'clear': 'クリア'
+		'clear': 'クリア',
+		'buildtotal': '合計（平均）'
 	}),
 	'kakari': '掛かり',
 	'itidoriarasoi': '位置取り争い'
@@ -101,8 +103,10 @@ const UI_en = Object.freeze({
 		'all': 'All skills',
 		'inherit': 'Inherited uniques',
 		'selected': 'Selected skills',
+		'build': 'Your build',
 		'addskill': '+ Add Skill',
-		'clear': 'Clear'
+		'clear': 'Clear',
+		'buildtotal': 'Total (mean)'
 	}),
 	'kakari': 'Kakari',
 	'itidoriarasoi': 'Lead Compete'
@@ -721,6 +725,7 @@ function Umalator(props) {
 		switch (mode) {
 		case 'selected': return chartSkills;
 		case 'inherit': return baseSkillsToTest.filter(id => id[0] == '9');
+		case 'build': return [];
 		default: return baseSkillsToTest;
 		}
 	}
@@ -858,12 +863,12 @@ function Umalator(props) {
 		});
 	}
 
-	function runBasinnChart(uma, params, skills) {
+	function runBasinnChart(uma, params, skills, owned = false) {
 		const filler = getNullTableData(skills);
 		setTableData(filler);
 		const nPerWorker = Math.ceil(skills.length/workers.length);
 		workers.reduce((skills, w) => {
-			w.postMessage({msg: 'chart', data: {skills: skills.slice(0, nPerWorker), course, racedef: params, uma, options: {seed, usePosKeep, useCompeteTop, useIntChecks: false}}});
+			w.postMessage({msg: 'chart', data: {skills: skills.slice(0, nPerWorker), course, racedef: params, uma, options: {seed, usePosKeep, useCompeteTop, useIntChecks: false}, owned}});
 			return skills.slice(nPerWorker);
 		}, skills);
 	}
@@ -872,6 +877,12 @@ function Umalator(props) {
 		postEvent('doBasinnChart', {});
 		const chartUma = withEnabledSkills(chartUmaIdx == 1 ? uma2 : uma1);
 		const params = racedefToParams(racedef, chartUma.strategy);
+		if (chartMode == 'build') {
+			const skills = getActivateableSkills(Array.from(chartUma.skills.values()), chartUma, course, params);
+			setLastChartRun({uma: chartUma, umaIdx: chartUmaIdx, courseId, racedef, skills, fresh: false});
+			runBasinnChart(chartUma, params, skills, true);
+			return;
+		}
 		const skills = getActivateableSkills(chartMode != 'all' ? chartSkillsForMode(chartMode) : baseSkillsToTest.filter(id => {
 			const existing = chartUma.skills.get(skillmeta[id].groupId);
 			const group = skillGroups.get(skillmeta[id].groupId);
@@ -892,6 +903,7 @@ function Umalator(props) {
 	}
 
 	function addSkillFromTable(skillId) {
+		if (chartMode == 'build') return;
 		postEvent('addSkillFromTable', {skillId});
 		const setChartUma = chartUmaIdx == 1 ? setUma2 : setUma1;
 		setChartUma(new (O.skills.get(skillmeta[skillId].groupId))(skillId));
@@ -1021,6 +1033,7 @@ function Umalator(props) {
 							hintLevels={O.hintLevels}
 							displayedRun={O.displayedRun}
 							dismissable={chartMode == 'selected'}
+							ownedMode={chartMode == 'build'}
 							onSelectionChange={basinnChartSelection}
 							onDblClickRow={addSkillFromTable}
 							onInfoClick={showPopover}
@@ -1144,6 +1157,10 @@ function Umalator(props) {
 										</div>
 									</fieldset>
 									<fieldset id="basinnChartSelect">
+										<div>
+											<input type="radio" id="basinnChartSelectBuild" name="basinnChartSelection" value="build" checked={chartMode == 'build'} onClick={switchChartMode} />
+											<label for="basinnChartSelectBuild"><Text id="ui.basinnchartselection.build" /></label>
+										</div>
 										<div>
 											<input type="radio" id="basinnChartSelectAll" name="basinnChartSelection" value="all" checked={chartMode == 'all'} onClick={switchChartMode} />
 											<label for="basinnChartSelectAll"><Text id="ui.basinnchartselection.all" /></label>

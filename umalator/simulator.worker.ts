@@ -37,12 +37,20 @@ function mergeResultSets(data1, data2) {
 	});
 }
 
-function run1Round(nsamples: number, skills: string[], course: CourseData, racedef: RaceParameters, uma: HorseState, seed: [number,number], options) {
+function run1Round(nsamples: number, skills: string[], course: CourseData, racedef: RaceParameters, uma: HorseState, seed: [number,number], options, owned: boolean = false) {
 	const data = new Map();
 	skills.forEach(id => {
-		const withSkill = {...uma, skills: new Map(uma.skills.entries())};
-		withSkill.skills.set(skillmeta[id].groupId, id);
-		const {results, runData} = runComparison(nsamples, course, racedef, uma, withSkill, seed, options);
+		const alt = {...uma, skills: new Map(uma.skills.entries())};
+		if (owned) {
+			// find and remove this skill by value (handles debuff groupId suffixes)
+			for (const [k, v] of alt.skills) {
+				if (v === id) { alt.skills.delete(k); break; }
+			}
+		} else {
+			alt.skills.set(skillmeta[id].groupId, id);
+		}
+		const [uma1, uma2] = owned ? [alt, uma] : [uma, alt];
+		const {results, runData} = runComparison(nsamples, course, racedef, uma1, uma2, seed, options);
 		const mid = Math.floor(results.length / 2);
 		const median = results.length % 2 == 0 ? (results[mid-1] + results[mid]) / 2 : results[mid];
 		const mean = results.reduce((a,b) => a+b, 0) / results.length;
@@ -57,22 +65,26 @@ function run1Round(nsamples: number, skills: string[], course: CourseData, raced
 	return data;
 }
 
-function doChart({skills, course, racedef, uma, options}) {
+function doChart({skills, course, racedef, uma, options, owned = false}) {
 	const seedgen = new Rule30CARng(options.seed);
-	let results = run1Round(3, skills, course, racedef, uma, seedgen.pair(), options);
+	let results = run1Round(3, skills, course, racedef, uma, seedgen.pair(), options, owned);
 	postMessage({type: 'chart', results});
-	let update = run1Round(17, skills, course, racedef, uma, seedgen.pair(), options);
+	let update = run1Round(17, skills, course, racedef, uma, seedgen.pair(), options, owned);
 	mergeResultSets(results, update);
 	postMessage({type: 'chart', results});
-	skills = skills.filter(id => results.get(id).max > 0.1);
-	update = run1Round(30, skills, course, racedef, uma, seedgen.pair(), options);
+	if (!owned) {
+		skills = skills.filter(id => results.get(id).max > 0.1);
+	}
+	update = run1Round(30, skills, course, racedef, uma, seedgen.pair(), options, owned);
 	mergeResultSets(results, update);
 	postMessage({type: 'chart', results});
-	skills = skills.filter(id => Math.abs(results.get(id).max - results.get(id).min) > 0.1);
-	update = run1Round(50, skills, course, racedef, uma, seedgen.pair(), options);
+	if (!owned) {
+		skills = skills.filter(id => Math.abs(results.get(id).max - results.get(id).min) > 0.1);
+	}
+	update = run1Round(50, skills, course, racedef, uma, seedgen.pair(), options, owned);
 	mergeResultSets(results, update);
 	postMessage({type: 'chart', results});
-	update = run1Round(100, skills, course, racedef, uma, seedgen.pair(), options);
+	update = run1Round(100, skills, course, racedef, uma, seedgen.pair(), options, owned);
 	mergeResultSets(results, update);
 	postMessage({type: 'chart', results});
 }

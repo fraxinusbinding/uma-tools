@@ -615,6 +615,35 @@ li.horseSkillDisabled .skillDisableToggle {
   color: #f97316;
 }
 
+/* --- Basinn Chart: Build Value (Owned Skills) Mode --------- */
+.basinnChartWrapper.ownedMode .basinnChart thead th {
+  background: linear-gradient(#1a3a2a, #122a1e);
+  border-bottom-color: #4ade80;
+}
+
+.basinnChartTotalRow {
+  background: linear-gradient(#1a3a2a, #122a1e);
+  font-weight: bold;
+  border-top: 2px solid #4ade80;
+}
+
+.basinnChartTotalRow td:first-child {
+  color: #4ade80;
+  padding-left: 8px;
+}
+
+.basinnChartTotalRow td:nth-child(2) {
+  color: #4ade80;
+  font-size: 1.05em;
+}
+
+.basinnChartTotalNote {
+  color: #94a3b8;
+  font-size: 0.75em;
+  font-weight: normal;
+  padding-left: 8px;
+}
+
 /* --- Basinn Chart Uma Selector ----------------------------- */
 #basinnChartUmaSelect {
   border: 1px solid #3a3a50;

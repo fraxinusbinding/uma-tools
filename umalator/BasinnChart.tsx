@@ -187,8 +187,12 @@ export function BasinnChart(props) {
 	}, [props.data]);
 	useEffect(() => () => obs.disconnect(), [props.data]);
 
+	const totalMean = props.ownedMode && props.data.length > 0
+		? props.data.reduce((sum, row) => sum + row.mean, 0)
+		: null;
+
 	return (
-		<div class={`basinnChartWrapper${props.dirty ? ' dirty' : ''}`} ref={root}>
+		<div class={`basinnChartWrapper${props.dirty ? ' dirty' : ''}${props.ownedMode ? ' ownedMode' : ''}`} ref={root}>
 			<table class="basinnChart">
 				<thead>
 					{table.getHeaderGroups().map(headerGroup => (
@@ -232,6 +236,15 @@ export function BasinnChart(props) {
 						}
 					})}
 				</tbody>
+				{totalMean != null && (
+					<tfoot>
+						<tr class="basinnChartTotalRow">
+							<td><Text id="ui.basinnchartselection.buildtotal" /></td>
+							<td>{totalMean.toFixed(2).replace('-0.00', '0.00') + ' L'}</td>
+							<td colSpan={5} class="basinnChartTotalNote">≈ sum of marginal skill contributions</td>
+						</tr>
+					</tfoot>
+				)}
 			</table>
 		</div>
 	);
