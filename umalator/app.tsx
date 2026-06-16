@@ -168,7 +168,7 @@ function horseEquals(h1, h2) {
 }
 
 function withEnabledSkills(uma) {
-	if (!uma.disabledSkills || uma.disabledSkills.size == 0) return uma;
+	if (!(uma.disabledSkills instanceof Set) || uma.disabledSkills.size == 0) return uma;
 	const skills = new Map(uma.skills);
 	uma.disabledSkills.forEach(id => {
 		const groupId = skillmeta[id] && skillmeta[id].groupId;
